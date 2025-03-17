@@ -1,4 +1,5 @@
 # Directory structure:
+```
 ├── app/
 │   ├── main.py     
 │   ├── rag_engine.py    
@@ -11,3 +12,4 @@
 │   └── <downloaded-model> 
 ├── requirements.txt
 └── README.md
+```
