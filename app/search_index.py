@@ -23,7 +23,6 @@ def index_document(text_chunk: str):
     embedding = EMBEDDING_MODEL.encode(text_chunk)
     EMBEDDINGS.append(embedding)
 
-    # Rebuild FAISS index
     dim = embedding.shape[0]
     FAISS_INDEX = faiss.IndexFlatL2(dim)
     FAISS_INDEX.add(np.array(EMBEDDINGS))
@@ -42,8 +41,6 @@ def retrieve_relevant_chunks(query: str, top_k=4):
     embedding = EMBEDDING_MODEL.encode([query])
     D, I = FAISS_INDEX.search(np.array(embedding), top_k)
     results.extend([DOCUMENTS[i] for i in I[0]])
-
-    print([DOCUMENTS[i] for i in I[0]])
 
     return list(set(results)) # list(set(...)) to remove duplicates
 
