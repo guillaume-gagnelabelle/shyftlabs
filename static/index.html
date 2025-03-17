@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shyftlabs RAG App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 1rem;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    input[type="file"], input[type="text"], button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    pre {
+      background: #d4d3d4;
+      padding: 1rem;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Shyftlabs RAG App</h1>
+
+    <h2>Upload Document</h2>
+    <form id="upload-form">
+      <input type="file" id="file" name="file" />
+      <button type="submit">Upload</button>
+    </form>
+
+    <h2>Ask a Question</h2>
+    <form id="query-form">
+      <input type="text" id="question" placeholder="Type your question..." />
+      <button type="submit">Ask</button>
+    </form>
+
+    <h2>Answer:</h2>
+    <pre id="response"></pre>
+  </div>
+
+  <script>
+    document.getElementById("upload-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const file = document.getElementById("file").files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    });
+
+    document.getElementById("query-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const question = document.getElementById("question").value;
+      const responseEl = document.getElementById("response");
+      responseEl.textContent = "";
+
+      const res = await fetch("/query", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question})
+      });
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        responseEl.textContent += decoder.decode(value);
+      }
+    });
+  </script>
+</body>
+</html>
