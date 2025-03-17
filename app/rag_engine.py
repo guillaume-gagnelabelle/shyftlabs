@@ -15,14 +15,8 @@ Context:
 Question: {query}
 Answer:"""
     
-    print(prompt)
-
     response = llm(prompt, max_tokens=2048, temperature=0.7)
     response = response["choices"][0]["text"].strip()
     yield response
-    #for chunk in response:
-    #    if word is not None:
-    #        yield word
-    #        await asyncio.sleep(0.01)
-    
+
     
